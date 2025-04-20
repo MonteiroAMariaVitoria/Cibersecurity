@@ -1,1 +1,93 @@
+import string
+import time
+
+
+def criptografar_cesar(frase, deslocamento=3):
+    alfabeto = string.ascii_lowercase
+    frase_crip = ""
+    for posicao in range(len(frase)):
+        if frase[posicao] in alfabeto:
+            posicao_alfabeto = alfabeto.index(frase[posicao])
+            frase_crip += alfabeto[(posicao_alfabeto + deslocamento) % 26]
+        else:
+            frase_crip += frase[posicao]  # Mantém espaços, pontuação etc.
+    return frase_crip
+
+
+def quebrar_cesar_forca_bruta(texto):
+    alfabeto = string.ascii_lowercase
+    inicio = time.time()  # Início da contagem de tempo
+    for chave in range(1, 26):  # de 1 a 25
+        resultado = ''
+        for letra in texto:
+            if letra in alfabeto:
+                indice = alfabeto.index(letra)
+                novo_indice = (indice - chave) % 26
+                resultado += alfabeto[novo_indice]
+            else:
+                resultado += letra  # mantém espaços, pontuação etc.
+        print(f"Chave {chave}: {resultado}")
+    fim = time.time()  # Fim da contagem
+    print(f"\nTempo de execução: {fim - inicio:.6f} segundos")
+
+
+def quebrar_cesar_frequencia(texto):
+    # Frequência aproximada das letras no português (em %)
+    frequencias_caracteres = {
+        'a': 13.9, 'b': 1.0, 'c': 4.4, 'd': 5.4, 'e': 12.2, 'f': 1.0,
+        'g': 1.2, 'h': 0.8, 'i': 6.9, 'j': 0.4, 'k': 0.1, 'l': 2.8,
+        'm': 4.2, 'n': 5.3, 'o': 10.8, 'p': 2.9, 'q': 0.9, 'r': 6.9,
+        's': 7.9, 't': 4.9, 'u': 4.0, 'v': 1.3, 'w': 0.0, 'x': 0.3,
+        'y': 0.0, 'z': 0.4
+    }
+
+    alfabeto = string.ascii_lowercase
+    melhor_frase = ''
+    melhor_score = -1
+    melhor_chave = 0
+
+    for chave in range(1, 26):
+        resultado = ''
+        for letra in texto:
+            if letra in alfabeto:
+                indice = alfabeto.index(letra)
+                novo_indice = (indice - chave) % 26
+                resultado += alfabeto[novo_indice]
+            else:
+                resultado += letra
+
+        
+        score = 0
+        for caractere in resultado:
+            if caractere in frequencias_caracteres:
+                score += frequencias_caracteres[caractere]
+
+        if score > melhor_score:
+            melhor_score = score
+            melhor_frase = resultado
+            melhor_chave = chave
+
+    return melhor_frase, melhor_chave
+
+
+
+print("Escreva a frase que quer criptografar:")
+frase = input().lower()
+
+
+frase_crip = criptografar_cesar(frase)
+print(f"Frase criptografada: {frase_crip}")
+
+texto_cifrado = "whpsr gh hahfxfdr"
+
+quebrar_cesar_forca_bruta(texto_cifrado)
+
+
+inicio = time.time() 
+frase_decifrada, chave_usada = quebrar_cesar_frequencia(texto_cifrado)
+fim = time.time()  
+
+print(f"Texto decifrado: {frase_decifrada}")
+print(f"Chave provável: {chave_usada}")
+print(f"Tempo de execução: {fim - inicio:.6f} segundos")
 
